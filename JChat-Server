@@ -1,0 +1,65 @@
+#!/usr/bin/python
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import os,random
+
+#Create custom HTTPRequestHandler class
+class HTTP(BaseHTTPRequestHandler):
+    global txt,tokens
+    #handle GET command
+    def do_GET(self):
+        global txt,tokens,secret
+        try:
+            #send code 200 response
+            txt2=open('txt-msg','w')
+            txt2.write(txt)
+            txt2.close()
+            self.send_response(200)
+            self.send_header('Content-type','text-html')
+            self.end_headers()
+            self.path=self.path[1:]
+            if "g"==self.path.split(",")[0]:
+                self.wfile.write(txt)
+            print(self.path)
+            if "p"==self.path.split(",")[0]:
+                txt+=tokens[self.path.split(",")[1]]+": "+self.path.split(",")[2].replace("%20"," ")+"\n"
+                print(txt)
+            elif "c"==self.path.split(",")[0]:
+                secret[self.path.split(",")[1]]=self.path.split(",")[2]
+                token=random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")
+                tokens[token]=self.path.split(",")[1]
+                self.wfile.write(token)
+            elif "s"==self.path.split(",")[0]:
+                sec_file=open("secret","w")
+                sec_file.write(str(secret))
+                sec_file.close()
+            if "l"==self.path.split(",")[0]:
+                if secret[self.path.split(",")[1]]==self.path.split(",")[2]:
+                    token=random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")+random.choice("abcdefghijklmnopqrstuvwxyz1234567890")
+                    tokens[token]=self.path.split(",")[1]
+                    self.wfile.write(token)
+            return 
+        except IOError:
+            self.send_error(404, 'file not found')
+    
+def run():
+    global txt,tokens,secret
+    print('JChat is starting...')
+    try:
+        txt=open('txt-msg','r')
+        txt=txt.read()
+    except:
+        txt=""
+    tokens={}
+    secret={}
+    try:
+        sec_file=open("secret","r").read()
+    except:
+        sec_file="{}"
+    secret=eval(sec_file)
+    server_address = ('0.0.0.0', 8080)
+    httpd = HTTPServer(server_address, HTTP)
+    print('Running...')
+    httpd.serve_forever()
+    
+if __name__ == '__main__':
+    run()
